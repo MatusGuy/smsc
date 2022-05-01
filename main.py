@@ -2,28 +2,7 @@
 from sys import executable as exe, argv, exit as abort
 from ctypes import windll
 
-REQUIRES_ADMIN = False # if planning to make a shortcut in the start menu folder, then disabling this won't make that happen
-
-def IsAdmin() -> bool:
-    try:
-        return windll.shell32.IsUserAnAdmin()
-    except:
-        return False
-
-if REQUIRES_ADMIN and not IsAdmin():
-    adminErrorMsg = """Program needs admin rights to copy files to the start menu folder.
-If that's not what you want to do, and really need this script, change the REQUIRES_ADMIN constant to False."""
-
-    windll.shell32.ShellExecuteW(None, 'runas', exe, ' '.join(argv), None, None)
-    if not IsAdmin():
-        print(adminErrorMsg)
-        abort()
-
-from os import system as cmd, path, getcwd as cwd
-from win32com.client import Dispatch
-shell = Dispatch("WScript.Shell") # kind of like an import
-
-DEBUG = False
+REQUIRES_ADMIN = True # if planning to make a shortcut in the start menu folder, then disabling this won't make that happen
 
 bcolors = {
     "HEADER": '\033[95m',
@@ -39,6 +18,27 @@ bcolors = {
 
 def PrintWithColour(color:str,msg:str):
     print(color+msg+bcolors["ENDC"])
+
+def IsAdmin() -> bool:
+    try:
+        return windll.shell32.IsUserAnAdmin()
+    except:
+        return False
+
+adminErrorMsg = """Program needs admin rights to copy files to the start menu folder.
+If that's not what you want to do, and really need this script, change the REQUIRES_ADMIN constant to False."""
+if not IsAdmin():
+    PrintWithColour(bcolors["FAIL"],adminErrorMsg)
+    abort()
+elif REQUIRES_ADMIN:
+    windll.shell32.ShellExecuteW(None, 'runas', exe, ' '.join(argv), None, None)
+    abort()
+
+from os import system as cmd, path, getcwd as cwd
+from win32com.client import Dispatch
+shell = Dispatch("WScript.Shell") # kind of like an import
+
+DEBUG = False
 
 def GetFullPathFromAbbreviatedPath(path:str) -> str:
     if path[0] == ".":
@@ -70,8 +70,6 @@ def CreateShortcut(file:str,output:str,args:str=""):
     FakeBreakpoint(f"link: {link}")
 
     return link
-
-argv = [" "," "," "]
 
 if len(argv) < 3:
     PrintWithColour(bcolors["FAIL"],"ERROR: Insufficient arguments")
