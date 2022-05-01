@@ -23,17 +23,33 @@ from os import system as cmd, path, getcwd as cwd
 from win32com.client import Dispatch
 shell = Dispatch("WScript.Shell") # kind of like an import
 
+DEBUG = False
+
 def GetFullPathFromAbbreviatedPath(path:str) -> str:
     if path[0] == ".":
-        newpath = path.replace(".",cwd(),1)
+        path = path.replace(".",cwd(),1)
     
-    return newpath
+    return path
+
+def FakeBreakpoint(msg:str):
+    if DEBUG:
+        resp = input(msg+"\ncontinue program? y/n: ")
+        if resp == "n":
+            die()
 
 def CreateShortcut(file:str,output:str,desc:str="A file/app.",args:str=""):
+    file = f'"{GetFullPathFromAbbreviatedPath(file)}"'
+
+    FakeBreakpoint(f"file: {file}; output: {output}")
+
     link = shell.CreateShortCut(output)
-    link.Targetpath = file
+    link.TargetPath = file
     link.WorkingDirectory = path.dirname(output)
     link.Arguments = args
+    link.save()
+
+    FakeBreakpoint(f"link: {link}")
+
     return link
 
 print(argv)
