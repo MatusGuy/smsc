@@ -1,7 +1,23 @@
 # ask for admin
-from sys import executable as exe, argv
+from sys import executable as exe, argv, exit as die
 from ctypes import windll
-#windll.shell32.ShellExecuteW(None, 'runas', exe, ' '.join(argv), None, None)
+
+REQUIRES_ADMIN = False # if planning to make a shortcut in the start menu folder, then disabling this won't make that happen
+
+def IsAdmin() -> bool:
+    try:
+        return windll.shell32.IsUserAnAdmin()
+    except:
+        return False
+
+if REQUIRES_ADMIN and not IsAdmin():
+    adminErrorMsg = """Program needs admin rights to copy files to the start menu folder.
+If that's not what you want to do, and really need this script, change the REQUIRES_ADMIN constant to False."""
+
+    windll.shell32.ShellExecuteW(None, 'runas', exe, ' '.join(argv), None, None)
+    if not IsAdmin():
+        print(adminErrorMsg)
+        die()
 
 from os import system as cmd, path, getcwd as cwd
 from win32com.client import Dispatch
