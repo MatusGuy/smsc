@@ -12,3 +12,10 @@ def CreateShortcut(file:str,output:str,desc:str="A file/app.",args:str="") -> Sh
         link.description = desc
         link.arguments = args
         return link
+
+CreateShortcut(
+    argv[1],
+    argv[2],
+    argv[3],
+    argv[4]
+)
