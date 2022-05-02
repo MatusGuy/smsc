@@ -58,6 +58,9 @@ def CreateShortcut(file:str,output:str,arguments:str=""):
     return link
 
 def main(args:list[str]=argv):
+    print("SMSC - Start Menu Shortcut Creator")
+    print("usage: smsc file output [arguments]")
+
     if len(args) < 3:
         PrintWithColour(bcolors["FAIL"],"ERROR: Insufficient arguments")
         abort()
