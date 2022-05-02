@@ -1,8 +1,8 @@
-# ask for admin
-from sys import executable as exe, argv, exit as abort
-from ctypes import windll
+# verify admin perms
+from sys import exit as abort, argv
+from program import ProgramPrint
 
-REQUIRES_ADMIN = True # if planning to make a shortcut in the start menu folder, then disabling this won't make that happen
+RUN = __name__ == "__main__"
 
 bcolors = {
     "HEADER": '\033[95m',
@@ -18,22 +18,8 @@ bcolors = {
 
 def PrintWithColour(color:str,msg:str):
     print(color+msg+bcolors["ENDC"])
-
-def IsAdmin() -> bool:
-    try:
-        return windll.shell32.IsUserAnAdmin()
-    except:
-        return False
-
-adminErrorMsg = """Program needs admin rights to copy files to the start menu folder.
-If that's not what you want to do, and really need this script, change the REQUIRES_ADMIN constant to False."""
-if not IsAdmin():
-    PrintWithColour(bcolors["FAIL"],adminErrorMsg)
-    abort()
-elif REQUIRES_ADMIN:
-    windll.shell32.ShellExecuteW(None, 'runas', exe, ' '.join(argv), None, None)
-    abort()
-
+    
+# ACTUAL PROGRAM THINGS
 from os import system as cmd, path, getcwd as cwd
 from win32com.client import Dispatch
 shell = Dispatch("WScript.Shell") # kind of like an import
@@ -52,7 +38,7 @@ def FakeBreakpoint(msg:str):
         if resp == "n":
             abort()
 
-def CreateShortcut(file:str,output:str,args:str=""):
+def CreateShortcut(file:str,output:str,arguments:str=""):
     file = f'"{GetFullPathFromAbbreviatedPath(file)}"'
 
     FakeBreakpoint(f"file: {file}; output: {output}")
@@ -61,7 +47,7 @@ def CreateShortcut(file:str,output:str,args:str=""):
         link = shell.CreateShortCut(output)
         link.TargetPath = file
         link.WorkingDirectory = path.dirname(output)
-        link.Arguments = args
+        link.Arguments = arguments
         link.save()
     except Exception as err:
         PrintWithColour(bcolors["FAIL"],f"ERROR: {err.args[2][2]}")
@@ -71,18 +57,21 @@ def CreateShortcut(file:str,output:str,args:str=""):
 
     return link
 
-if len(argv) < 3:
-    PrintWithColour(bcolors["FAIL"],"ERROR: Insufficient arguments")
-    abort()
+def main(args:list[str]=argv):
+    if len(args) < 3:
+        PrintWithColour(bcolors["FAIL"],"ERROR: Insufficient arguments")
+        abort()
 
-lnkArgs = ""
-try:
-    lnkArgs = argv[3]
-except IndexError:
-    PrintWithColour(bcolors["WARNING"],"WARNING: Shortcut args unspecified.")
+    lnkArgs = ""
+    try:
+        lnkArgs = args[3]
+    except IndexError:
+        PrintWithColour(bcolors["WARNING"],"WARNING: Shortcut args unspecified.")
 
-CreateShortcut(
-    argv[1],
-    argv[2],
-    lnkArgs
-)
+    CreateShortcut(
+        args[1],
+        args[2],
+        lnkArgs
+    )
+
+if RUN: main(argv)
