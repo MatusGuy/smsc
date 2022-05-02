@@ -16,6 +16,9 @@ if __name__ == "__main__":
     # ask for admin
     from main import main
     
+    print("SMSC - Start Menu Shortcut Creator")
+    print("usage: smsc file output [arguments]")
+
     if IsAdmin():
         main(argv)
     elif REQUIRES_ADMIN:
