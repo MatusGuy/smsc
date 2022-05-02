@@ -15,13 +15,10 @@ def IsAdmin() -> bool:
 if __name__ == "__main__":
     # ask for admin
     from main import main
-    
-    print("SMSC - Start Menu Shortcut Creator")
-    print("usage: smsc file output [arguments]")
 
     if IsAdmin():
         main(argv)
     elif REQUIRES_ADMIN:
-        windll.shell32.ShellExecuteW(None, 'runas', exe, ' '.join(argv), None, None)
+        windll.shell32.ShellExecuteW(None, 'runas', exe, ' '.join(argv[1:]), None, None)
     else:
         main(argv)
