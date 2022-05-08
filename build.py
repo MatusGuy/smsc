@@ -10,6 +10,9 @@ PRODUCT = "Desktop application"
 PRODUCT_VER = "1.0.0.0"
 DESC = "SMSC - Start Menu Shortcut Creator"
 
+DISABLE_CMD_WINDOW = False
+FORCE_STDOUT_SPEC = False
+
 MANIFEST = ""
 
 UAC = False
@@ -30,6 +33,8 @@ if PRODUCT: add2command(f'--windows-product-name="{PRODUCT}"')
 if PRODUCT_VER: add2command(f'--windows-product-version="{PRODUCT_VER}"')
 #if MANIFEST: add2command(f"--") (idk how to include manifest file yet, what even is manifest)
 if UAC: add2command("--windows-uac-admin")
+if DISABLE_CMD_WINDOW: add2command("--windows-disable-console")
+if FORCE_STDOUT_SPEC: add2command("--windows-force-stdout-spec=%PROGRAM%.out.txt")
 
 add2command(MAIN)
 
