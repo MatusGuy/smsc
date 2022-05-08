@@ -1,6 +1,5 @@
 # verify admin perms
 from sys import exit as abort, argv
-from program import ProgramPrint
 
 RUN = __name__ == "__main__"
 
