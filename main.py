@@ -19,7 +19,7 @@ def PrintWithColour(color:str,msg:str):
     print(color+msg+bcolors["ENDC"])
     
 # ACTUAL PROGRAM THINGS
-from os import system as cmd, path, getcwd as cwd
+from os import path, getcwd as cwd
 from win32com.client import Dispatch
 shell = Dispatch("WScript.Shell") # kind of like an import
 
